@@ -9,7 +9,7 @@ export default function CICDChart() {
     datasets: [
       {
         label: "CI/CD Stats",
-        data: [12, 8, 2],
+        data: [12, 8, 2], // 🔹 Later, we can update this dynamically
         backgroundColor: ["#3B82F6", "#22C55E", "#EF4444"],
         borderColor: ["#1E40AF", "#166534", "#991B1B"],
         borderWidth: 2,
