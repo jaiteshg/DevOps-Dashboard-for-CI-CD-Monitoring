@@ -15,3 +15,12 @@ model User {
   image     String?
   createdAt DateTime @default(now())
 }
+
+model CICD {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  projectName String
+  status      String   @default("Pending")
+  buildNumber Int
+  logs        String
+  createdAt   DateTime @default(now())
+}

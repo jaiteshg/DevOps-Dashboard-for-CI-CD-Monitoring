@@ -1,43 +1,38 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import io, { Socket } from "socket.io-client";
+
+
 
 export default function CICDStatus() {
-  const [status, setStatus] = useState({
-    build: { status: "Loading...", time: "" },
-    deployment: { status: "Loading...", time: "" },
+  interface CICDStatusType {
+    build: { status: string } | null;
+    deployment: { status: string } | null;
+  }
+
+  const [status, setStatus] = useState<CICDStatusType>({ build: null, deployment: null });
+
+  const socket: Socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000", {
+    path: "/api/socket",
   });
 
   useEffect(() => {
-    const fetchStatus = async () => {
-      try {
-        const res = await fetch(`/api/cicd/status`);
-        if (!res.ok) throw new Error("Failed to fetch CI/CD status");
+    socket.on("cicdUpdate", (data) => {
+      console.log("Received update:", data);
+      setStatus(data);
+    });
 
-        const data = await res.json();
-        setStatus(data);
-      } catch (error) {
-        console.error("Error fetching CI/CD status:", error);
-      }
+    return () => {
+      socket.off("cicdUpdate");
     };
-
-    fetchStatus();
-    const interval = setInterval(fetchStatus, 5000); // Fetch every 5 seconds
-
-    return () => clearInterval(interval);
   }, []);
 
+  
+
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 shadow-md rounded-lg">
-      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Live CI/CD Status</h3>
-      <div className="space-y-2">
-        <p className="text-gray-700 dark:text-gray-300">
-          <strong>Build:</strong> {status?.build?.status || "Fetching..."}{" "}
-          <span className="text-sm">({status?.build?.time || "..."})</span>
-        </p>
-        <p className="text-gray-700 dark:text-gray-300">
-          <strong>Deployment:</strong> {status?.deployment?.status || "Fetching..."}{" "}
-          <span className="text-sm">({status?.deployment?.time || "..."})</span>
-        </p>
-      </div>
+    <div>
+      <h2>CI/CD Status</h2>
+      <p><strong>Build:</strong> {status.build?.status || "Fetching..."}</p>
+      <p><strong>Deployment:</strong> {status.deployment?.status || "Fetching..."}</p>
     </div>
   );
 }
