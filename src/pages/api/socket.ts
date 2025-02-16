@@ -3,6 +3,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import type { Server as HTTPServer } from "http";
 import type { Socket as NetSocket } from "net";
 import type { Server as IOServer } from "socket.io";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 interface SocketServer extends HTTPServer {
   io?: IOServer;
@@ -16,61 +19,42 @@ interface NextApiResponseWithSocket extends NextApiResponse {
   socket: SocketWithIO;
 }
 
-// Function to fetch CI/CD status from GitHub Actions API
-async function fetchCICDStatus() {
-  try {
-    const response = await fetch(
-      "https://api.github.com/repos/jaiteshg/DevOps-Dashboard-for-CI-CD-Monitoring/actions/runs",
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-          Accept: "application/vnd.github.v3+json",
-        },
-      }
-    );
-
-    if (!response.ok) return { error: "Failed to fetch CI/CD runs" };
-
-    const data = await response.json();
-    if (!data.workflow_runs || data.workflow_runs.length === 0) return { error: "No CI/CD runs found" };
-
-    return {
-      build: {
-        status: data.workflow_runs[0].status,
-        time: data.workflow_runs[0].created_at,
-      },
-      deployment: {
-        status: data.workflow_runs[0].conclusion || "in_progress",
-        time: data.workflow_runs[0].updated_at,
-      },
-    };
-  } catch (error) {
-    return { error: "Server error" };
-  }
-}
-
-// WebSocket handler
 export default function handler(req: NextApiRequest, res: NextApiResponseWithSocket) {
   if (res.socket.server.io) {
-    console.log("WebSocket already set up");
+    console.log("✅ WebSocket is already running");
     res.end();
     return;
   }
 
-  console.log("Setting up WebSocket...");
-  const io = new Server(res.socket.server, { path: "/api/socket" }); // Use correct path
+  console.log("🔌 Setting up WebSocket...");
+  const io = new Server(res.socket.server, {
+    path: "/api/socket_io",
+    cors: { origin: "*" },
+  });
+
   res.socket.server.io = io;
 
   io.on("connection", (socket) => {
-    console.log("New WebSocket connection");
+    console.log("🟢 New WebSocket connection established");
 
-    setInterval(async () => {
-      const data = await fetchCICDStatus();
-      socket.emit("cicdUpdate", data);
-    }, 10000);
+    const sendCICDUpdates = async () => {
+      try {
+        const cicdData = await prisma.cICD.findMany({
+          orderBy: { createdAt: "desc" },
+        });
+
+        io.emit("cicdUpdate", cicdData); // 🔹 Send updates to all connected clients
+      } catch (error) {
+        console.error("❌ Error fetching CI/CD data:", error);
+      }
+    };
+
+    // Fetch & send updates every 5 seconds
+    const interval = setInterval(sendCICDUpdates, 5000);
 
     socket.on("disconnect", () => {
-      console.log("WebSocket Disconnected");
+      console.log("❌ WebSocket Disconnected");
+      clearInterval(interval);
     });
   });
 
