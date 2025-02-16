@@ -23,10 +23,15 @@ export default function CICDChart() {
     plugins: {
       legend: {
         display: true,
-        position: "top" as const,
+        position: "top" as const, // ✅ Explicitly setting the position type
       },
       tooltip: {
         enabled: true,
+        callbacks: {
+          label: function (tooltipItem: any) {
+            return `Count: ${tooltipItem.raw}`;
+          },
+        },
       },
     },
     scales: {
@@ -43,7 +48,8 @@ export default function CICDChart() {
       },
     },
   };
-
+  
+  
   return (
     <div className="bg-white dark:bg-gray-800 p-6 shadow-md rounded-lg h-80">
       <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">CI/CD Stats</h3>

@@ -4,6 +4,7 @@ import CICDStatus from "@/components/CICDStatus";
 import Sidebar from "@/components/Sidebar";
 import { useRouter } from "next/router";
 import CICDChart from "@/components/CICDChart";
+import PipelineLogs from "@/components/PipelineLogs";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -19,6 +20,8 @@ export default function Dashboard() {
         </div>
         <CICDChart /> 
         <CICDStatus /> 
+        <PipelineLogs />
+
         <div className="mt-6 flex justify-center">
           <button
             onClick={() => router.push("/signup")}
