@@ -30,7 +30,7 @@ export default function CICDStatus() {
           },
         });
       } catch (error) {
-        console.error("❌ Error fetching CI/CD status:", error);
+        console.error(" Error fetching CI/CD status:", error);
       }
     };
 
