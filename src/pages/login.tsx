@@ -22,7 +22,7 @@ export default function Login() {
     });
 
     setLoading(false);
-    if (res?.error) return setError("❌ Invalid email or password");
+    if (res?.error) return setError("Invalid email or password");
 
     router.push("/"); // Redirect to dashboard
   };

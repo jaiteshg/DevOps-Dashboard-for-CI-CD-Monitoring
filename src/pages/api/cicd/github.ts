@@ -45,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(200).json(formattedData);
   } catch (error) {
-    console.error("❌ Error fetching GitHub Actions data:", error);
+    console.error(" Error fetching GitHub Actions data:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }

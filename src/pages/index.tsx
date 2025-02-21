@@ -31,34 +31,36 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
-      <Sidebar activeTab={""} setActiveTab={function (tab: string): void {
-        throw new Error("Function not implemented.");
-      }} />
+    <div className="flex h-full bg-gray-100 dark:bg-gray-900">
+      <Sidebar activeTab={""} setActiveTab={() => {}} />
       
       <main className="flex-1 p-6">
-        {/* 🔹 Top Bar */}
+        {/* Top Bar */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white">🚀 Dashboard Overview</h2>
           <Auth />
         </div>
 
-        {/* 🔹 Key CI/CD Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        {/* Key CI/CD Metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
           <DashboardCard title="Total Runs" value={stats.total} color="bg-blue-500" />
           <DashboardCard title="Success" value={stats.success} color="bg-green-500" />
           <DashboardCard title="Failed" value={stats.failed} color="bg-red-500" />
           <DashboardCard title="In Progress" value={stats.inProgress} color="bg-yellow-500" />
         </div>
 
-        {/* 🔹 Charts & Live Status */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Charts & Live Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <CICDChart />
           <CICDStatus />
+        </div>
+
+        {/* Pipeline Logs - Full Width */}
+        <div className="w-full">
           <PipelineLogs />
         </div>
 
-        {/* 🔹 Sign Up Button */}
+        {/* Sign Up Button - Centered */}
         <div className="mt-6 flex justify-center">
           <button
             onClick={() => router.push("/signup")}
@@ -72,7 +74,7 @@ export default function Dashboard() {
   );
 }
 
-// 🔹 Small Card Component for Key Metrics
+// Small Card Component for Key Metrics
 interface DashboardCardProps {
   title: string;
   value: number;
@@ -81,7 +83,7 @@ interface DashboardCardProps {
 
 function DashboardCard({ title, value, color }: DashboardCardProps) {
   return (
-    <div className={`${color} text-white p-6 rounded-lg shadow-md`}>
+    <div className={`${color} text-white p-6 rounded-lg shadow-md flex flex-col items-center`}>
       <h3 className="text-xl font-semibold">{title}</h3>
       <p className="text-3xl font-bold">{value}</p>
     </div>

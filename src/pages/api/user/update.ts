@@ -28,7 +28,6 @@ export default async function handler(
 ) {
     if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
 
-    // ✅ Correct way to get the session in an API route
     const session: Session | null = await getServerSession(req, res, authOptions);
     
     if (!session || !session.user?.email) {

@@ -111,7 +111,7 @@ export default function CICDChart() {
       <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">CI/CD Insights</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* 🔹 Line Chart */}
+        {/* Line Chart */}
         <div className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow" style={{ height: "400px" }}>
           <h4 className="text-md font-semibold mb-2 text-gray-900 dark:text-white">Build Trends Over Time</h4>
           <div style={{ height: "350px" }}>
@@ -119,7 +119,7 @@ export default function CICDChart() {
           </div>
         </div>
 
-        {/* 🔹 Pie Chart */}
+        {/* Pie Chart */}
         <div className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow" style={{ height: "400px" }}>
           <h4 className="text-md font-semibold mb-2 text-gray-900 dark:text-white">Build Status Distribution</h4>
           <div style={{ height: "350px" }}>

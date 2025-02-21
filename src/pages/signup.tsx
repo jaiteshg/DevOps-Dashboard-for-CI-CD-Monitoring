@@ -27,7 +27,7 @@ export default function Signup() {
     setLoading(false);
     if (!res.ok) return setError(data.error);
 
-    setSuccess("✅ Account created successfully! Redirecting...");
+    setSuccess("Account created successfully! Redirecting...");
     setTimeout(() => router.push("/login"), 2000);
   };
 

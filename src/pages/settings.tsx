@@ -36,7 +36,7 @@ export default function Settings() {
     setLoading(false);
     if (!res.ok) return setError(data.error);
 
-    setSuccess("✅ Profile updated successfully!");
+    setSuccess("Profile updated successfully!");
     
     // Update NextAuth session so changes reflect immediately
     await update({ name, email });

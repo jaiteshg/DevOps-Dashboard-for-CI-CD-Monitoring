@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ message: "Error fetching CI/CD data", error });
     }
   } 
-  else if (req.method === "POST") {  // ✅ Ensure this part exists!
+  else if (req.method === "POST") {  
     try {
       const { projectName, status, buildNumber, logs } = req.body;
 
@@ -32,6 +32,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } 
   else {
-    res.status(405).json({ message: "Method Not Allowed" });  // ❌ Error happens here if POST isn't allowed
+    res.status(405).json({ message: "Method Not Allowed" });  
   }
 }

@@ -55,7 +55,7 @@ export default function PipelineLogs() {
     <div className="w-full flex flex-col items-center justify-center">
       <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Pipeline Logs</h3>
 
-      {/* 🔹 Filter Options */}
+      {/*  Filter Options */}
       <div className="flex gap-4 mb-4">
         <select
           className="border px-4 py-2 rounded text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-700"
@@ -82,7 +82,7 @@ export default function PipelineLogs() {
         </select>
       </div>
 
-      {/* 🔹 Log Container */}
+      {/*  Log Container */}
       <div className="bg-gray-900 dark:bg-gray-800 p-6 shadow-md rounded-lg w-3/4 max-w-4xl">
         {logs.length === 0 ? (
           <p className="text-gray-500 text-center">No logs match your filters.</p>

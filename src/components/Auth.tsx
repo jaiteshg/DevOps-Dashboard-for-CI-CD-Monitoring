@@ -9,8 +9,7 @@ export default function Auth() {
     <div className="flex items-center gap-4">
       {session ? (
         <>
-          {/* 🔹 User Avatar & Name */}
-          {/* 🔹 User Avatar & Name */}
+          {/* User Avatar & Name */}
           {session.user?.image ? (
             <img
               src={session.user.image}
@@ -26,7 +25,7 @@ export default function Auth() {
               {session.user?.name ? session.user.name[0] : "?"}
             </div>
           )}
-          {/* 🔹 Logout Button */}
+          {/*  Logout Button */}
           <button
             onClick={() => signOut()}
             className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"

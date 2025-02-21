@@ -13,21 +13,22 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-<motion.aside
-      initial={{ width: isCollapsed ? 80 : 260 }} // 🔹 Animated Sidebar Width
+    <motion.aside
+      initial={{ width: isCollapsed ? 80 : 260 }} 
       animate={{ width: isCollapsed ? 80 : 260 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="bg-white dark:bg-gray-900 p-4 shadow-md flex flex-col h-screen overflow-hidden"
+      className="bg-white dark:bg-gray-900 p-4 shadow-md flex flex-col h-screen min-h-screen overflow-auto" 
     >
-      {/* 🔹 Sidebar Toggle Button */}
+
+      {/* Sidebar Toggle Button */}
       <button
-        className="self-end p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+        className="self-end p-2 rounded-md bg-white hover:bg-gray-200 dark:hover:bg-gray-700 transition"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         {isCollapsed ? <Menu size={24} /> : <X size={24} />}
       </button>
 
-      {/* 🔹 Logo & Title */}
+      {/* Logo & Title */}
       {!isCollapsed && (
         <motion.h1
           initial={{ opacity: 0 }}
@@ -39,7 +40,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
         </motion.h1>
       )}
 
-      {/* 🔹 Navigation */}
+      {/*  Navigation */}
       <nav className="flex-1 space-y-4">
         {[
           { name: "Home", icon: Home, id: "home" },

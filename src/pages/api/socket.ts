@@ -21,7 +21,7 @@ interface NextApiResponseWithSocket extends NextApiResponse {
 
 export default function handler(req: NextApiRequest, res: NextApiResponseWithSocket) {
   if (res.socket.server.io) {
-    console.log("✅ WebSocket is already running");
+    console.log(" WebSocket is already running");
     res.end();
     return;
   }
@@ -35,7 +35,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponseWithSoc
   res.socket.server.io = io;
 
   io.on("connection", (socket) => {
-    console.log("🟢 New WebSocket connection established");
+    console.log(" New WebSocket connection established");
 
     const sendCICDUpdates = async () => {
       try {
@@ -45,7 +45,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponseWithSoc
 
         io.emit("cicdUpdate", cicdData); // 🔹 Send updates to all connected clients
       } catch (error) {
-        console.error("❌ Error fetching CI/CD data:", error);
+        console.error(" Error fetching CI/CD data:", error);
       }
     };
 
@@ -53,7 +53,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponseWithSoc
     const interval = setInterval(sendCICDUpdates, 5000);
 
     socket.on("disconnect", () => {
-      console.log("❌ WebSocket Disconnected");
+      console.log(" WebSocket Disconnected");
       clearInterval(interval);
     });
   });
