@@ -31,8 +31,8 @@ export default NextAuth({
     }),
   ],
   pages: {
-    signIn: "/login", // Redirect to custom login page
-    error: "/login",  // Show errors on login page
+    signIn: "/Signin", 
+    error: "/Signin",  
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: true, // Enable debug mode

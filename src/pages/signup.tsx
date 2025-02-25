@@ -28,7 +28,7 @@ export default function Signup() {
     if (!res.ok) return setError(data.error);
 
     setSuccess("Account created successfully! Redirecting...");
-    setTimeout(() => router.push("/login"), 2000);
+    router.push("/signin")
   };
 
   return (
@@ -74,6 +74,12 @@ export default function Signup() {
           >
             {loading ? "Creating Account..." : "Sign Up"}
           </button>
+          <p className="text-center text-gray-500">
+            Already have an account?{" "}
+            <a href="/signin" className="text-blue-500 hover:underline">
+              SignIn
+            </a>
+          </p>
         </form>
       </motion.div>
     </div>

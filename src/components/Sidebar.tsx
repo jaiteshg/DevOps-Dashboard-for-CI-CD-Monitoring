@@ -45,7 +45,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
         {[
           { name: "Home", icon: Home, id: "home" },
           { name: "Pipelines", icon: Activity, id: "pipelines" },
-          { name: "Settings", icon: Settings, id: "settings" },
+          { name: "Settings", icon: Settings, id: "settings"  },
         ].map(({ name, icon: Icon, id }) => (
           <motion.button
             key={id}

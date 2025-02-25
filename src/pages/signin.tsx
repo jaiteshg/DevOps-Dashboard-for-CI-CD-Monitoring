@@ -3,14 +3,14 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 
-export default function Login() {
+export default function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -35,9 +35,9 @@ export default function Login() {
         transition={{ duration: 0.5 }}
         className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96"
       >
-        <h2 className="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-white">Login</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-white">Signin</h2>
         {error && <p className="text-red-500 text-center">{error}</p>}
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+        <form onSubmit={handleSignin} className="flex flex-col gap-4">
           <input
             type="email"
             placeholder="Email"
@@ -59,8 +59,14 @@ export default function Login() {
             className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition"
             disabled={loading}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Signing in..." : "Signin"}
           </button>
+          <p className="text-center text-gray-500">
+            Don't have an account?{" "}
+            <a href="/signup" className="text-blue-500 hover:underline">
+              Signup
+            </a>
+          </p>
         </form>
       </motion.div>
     </div>

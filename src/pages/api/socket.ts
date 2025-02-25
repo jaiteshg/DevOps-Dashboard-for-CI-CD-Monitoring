@@ -21,12 +21,12 @@ interface NextApiResponseWithSocket extends NextApiResponse {
 
 export default function handler(req: NextApiRequest, res: NextApiResponseWithSocket) {
   if (res.socket.server.io) {
-    console.log(" WebSocket is already running");
+    console.log(" WebSocket server is already running.");
     res.end();
     return;
   }
 
-  console.log("🔌 Setting up WebSocket...");
+  console.log(" Setting up WebSocket server...");
   const io = new Server(res.socket.server, {
     path: "/api/socket_io",
     cors: { origin: "*" },
@@ -35,7 +35,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponseWithSoc
   res.socket.server.io = io;
 
   io.on("connection", (socket) => {
-    console.log(" New WebSocket connection established");
+    console.log(" New WebSocket connection established.");
 
     const sendCICDUpdates = async () => {
       try {
@@ -43,13 +43,13 @@ export default function handler(req: NextApiRequest, res: NextApiResponseWithSoc
           orderBy: { createdAt: "desc" },
         });
 
-        io.emit("cicdUpdate", cicdData); // 🔹 Send updates to all connected clients
+        io.emit("cicdUpdate", cicdData);
       } catch (error) {
         console.error(" Error fetching CI/CD data:", error);
       }
     };
 
-    // Fetch & send updates every 5 seconds
+    // Send updates every 5 seconds
     const interval = setInterval(sendCICDUpdates, 5000);
 
     socket.on("disconnect", () => {
