@@ -2,6 +2,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function Signin() {
   const [email, setEmail] = useState("");
@@ -62,10 +63,10 @@ export default function Signin() {
             {loading ? "Signing in..." : "Signin"}
           </button>
           <p className="text-center text-gray-500">
-            Don't have an account?{" "}
-            <a href="/signup" className="text-blue-500 hover:underline">
+            Don not have an account?{" "}
+            <Link href="/signup" className="text-blue-500 hover:underline">
               Signup
-            </a>
+            </Link>
           </p>
         </form>
       </motion.div>

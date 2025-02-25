@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -76,9 +77,9 @@ export default function Signup() {
           </button>
           <p className="text-center text-gray-500">
             Already have an account?{" "}
-            <a href="/signin" className="text-blue-500 hover:underline">
+            <Link href="/signin" className="text-blue-500 hover:underline">
               SignIn
-            </a>
+            </Link>
           </p>
         </form>
       </motion.div>

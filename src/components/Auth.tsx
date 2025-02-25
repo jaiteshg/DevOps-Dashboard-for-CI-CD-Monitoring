@@ -1,5 +1,6 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 export default function Auth() {
   const { data: session } = useSession();
@@ -11,12 +12,12 @@ export default function Auth() {
         <>
           {/* User Avatar & Name */}
           {session.user?.image ? (
-            <img
+            <Image
               src={session.user.image}
               alt="User Avatar"
               className="w-10 h-10 rounded-full border border-gray-300 cursor-pointer"
               onClick={() => router.push("/settings")}
-            />
+            ></Image>
           ) : (
             <div
               className="w-10 h-10 flex items-center justify-center bg-gray-400 rounded-full text-white font-bold cursor-pointer"

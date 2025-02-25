@@ -33,7 +33,7 @@ export default function PipelineLogs() {
     return () => {
       newSocket.disconnect();
     };
-  }, []);
+  },[projectFilter, statusFilter]);
 
   const updateFilters = useCallback(() => {
     if (socket) {

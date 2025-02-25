@@ -8,7 +8,7 @@ const NEXT_PUBLIC_SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://loc
 Chart.register(...registerables, CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend);
 
 export default function CICDChart() {
-  const [builds, setBuilds] = useState([]);
+  const [, setBuilds] = useState([]);
   const [lineChartData, setLineChartData] = useState<LineChartData>({
     labels: [],
     datasets: [],
@@ -39,7 +39,7 @@ export default function CICDChart() {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  });
 
   interface BuildLog {
     createdAt: string;

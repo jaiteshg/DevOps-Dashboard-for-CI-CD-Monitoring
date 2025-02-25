@@ -33,7 +33,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Format data for frontend
-    const formattedData = data.workflow_runs.map((run: any) => ({
+    interface WorkflowRun {
+      id: number;
+      status: string;
+      conclusion: string;
+      created_at: string;
+      updated_at: string;
+      head_branch: string;
+      head_commit?: {
+        message: string;
+      };
+      html_url: string;
+    }
+
+    interface FormattedRun {
+      id: number;
+      status: string;
+      createdAt: string;
+      updatedAt: string;
+      branch: string;
+      commit: string;
+      url: string;
+    }
+
+    const formattedData: FormattedRun[] = data.workflow_runs.map((run: WorkflowRun) => ({
       id: run.id,
       status: run.status === "completed" ? (run.conclusion === "success" ? "Success" : "Failed") : "In Progress",
       createdAt: run.created_at,
