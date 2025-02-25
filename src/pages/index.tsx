@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
 import Auth from "@/components/Auth";
 import CICDChart from "@/components/CICDChart";
 import CICDStatus from "@/components/CICDStatus";
