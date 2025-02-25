@@ -17,7 +17,7 @@ export default function PipelineLogs() {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:3000", { path: "/api/socket_io" });
+    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000", { path: "/api/socket_io" });
 
     newSocket.on("connect", () => {
       console.log("Connected to WebSocket");

@@ -3,6 +3,8 @@ import { Chart, registerables, CategoryScale, LinearScale, PointElement, LineEle
 import { useState, useEffect } from "react";
 import io from "socket.io-client";
 
+const NEXT_PUBLIC_SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000";
+
 Chart.register(...registerables, CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend);
 
 export default function CICDChart() {
@@ -22,7 +24,7 @@ export default function CICDChart() {
     });
 
   useEffect(() => {
-    const socket = io("http://localhost:3000", { path: "/api/socket_io" });
+    const socket = io(NEXT_PUBLIC_SOCKET_URL, { path: "/api/socket_io" });
 
     socket.on("connect", () => {
       console.log("✅ WebSocket Connected");
