@@ -24,24 +24,29 @@ export default function Dashboard() {
   }, [status, router]);
 
   useEffect(() => {
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000", { path: "/api/socket_io" });
-
-    socket.on("cicdUpdate", (data) => {
-      console.log("📡 Received CI/CD update:", data);
-
-      const total = data.length;
-      const failed = data.filter((log: CICDLog) => log.status === "Failed").length;
-      const success = data.filter((log: CICDLog) => log.status === "Success").length;
-      const inProgress = data.filter((log: CICDLog) => log.status === "In Progress").length;
-
-      setStats({ total, failed, success, inProgress });
-    });
-
-    return () => {
-      socket.disconnect();
+    const fetchUpdates = async () => {
+      try {
+        const res = await fetch("/api/cicd/status"); // Your API route
+        const data = await res.json();
+        console.log("📡 Received CI/CD update:", data);
+  
+        const total = data.length;
+        const failed = data.filter((log: CICDLog) => log.status === "Failed").length;
+        const success = data.filter((log: CICDLog) => log.status === "Success").length;
+        const inProgress = data.filter((log: CICDLog) => log.status === "In Progress").length;
+  
+        setStats({ total, failed, success, inProgress });
+      } catch (error) {
+        console.error("❌ Error fetching CI/CD stats:", error);
+      }
     };
+  
+    fetchUpdates();
+    const interval = setInterval(fetchUpdates, 5000); // Poll every 5 seconds
+  
+    return () => clearInterval(interval);
   }, []);
-
+  
   if (status === "loading") return <p>Loading...</p>;
   if (!session) return null;
 
