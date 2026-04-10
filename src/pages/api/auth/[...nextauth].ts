@@ -1,9 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaClient } from "@prisma/client";
-
-
-const prisma = new PrismaClient();
+import clientPromise from "@/lib/mongodb";
+import bcrypt from "bcryptjs";
 
 export default NextAuth({
   providers: [
@@ -13,27 +11,48 @@ export default NextAuth({
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
-        console.log("Received Credentials:", credentials); // Debugging
 
+      async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and Password are required.");
+          throw new Error("Email and Password are required");
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+        const client = await clientPromise;
+        const db = client.db();
+
+        const user = await db.collection("users").findOne({
+          email: credentials.email,
         });
 
-        if (!user) throw new Error("User not found.");
+        if (!user) {
+          throw new Error("User not found");
+        }
 
-        return { id: user.id, email: user.email };
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!isValid) {
+          throw new Error("Invalid password");
+        }
+
+        return {
+          id: user._id.toString(),
+          email: user.email,
+        };
       },
     }),
   ],
-  pages: {
-    signIn: "/Signin", 
-    error: "/Signin",  
+
+  session: {
+    strategy: "jwt",
   },
+
+  pages: {
+    signIn: "/signin", 
+    error: "/signin",
+  },
+
   secret: process.env.NEXTAUTH_SECRET,
-  debug: true, // Enable debug mode
 });

@@ -24,22 +24,12 @@ export default function CICDChart() {
     });
 
   useEffect(() => {
-    const socket = io(NEXT_PUBLIC_SOCKET_URL, { path: "/api/socket_io" });
+  const interval = setInterval(() => {
+        fetch("/api/cicd/status");
+      }, 5000);
 
-    socket.on("connect", () => {
-      console.log("✅ WebSocket Connected");
-    });
-
-    socket.on("cicdUpdate", (data) => {
-      console.log("📥 Received CI/CD Update:", data);
-      setBuilds(data);
-      processChartData(data);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  });
+      return () => clearInterval(interval);
+      }, []);
 
   interface BuildLog {
     createdAt: string;

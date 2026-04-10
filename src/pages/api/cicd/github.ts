@@ -16,49 +16,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/actions/runs`,
       {
         headers: {
-          Authorization: `Bearer ${GITHUB_TOKEN}`,
+          Authorization: `token ${GITHUB_TOKEN}`,
           Accept: "application/vnd.github.v3+json",
         },
       }
     );
 
-    if (!response.ok) {
-      return res.status(response.status).json({ error: "Failed to fetch CI/CD runs" });
-    }
-
     const data = await response.json();
 
-    if (!data.workflow_runs || data.workflow_runs.length === 0) {
-      return res.status(404).json({ error: "No CI/CD runs found" });
+    if (!response.ok) {
+      console.error(data);
+      return res.status(response.status).json({ error: data.message || "GitHub API failed" });
     }
 
-    // Format data for frontend
-    interface WorkflowRun {
-      id: number;
-      status: string;
-      conclusion: string;
-      created_at: string;
-      updated_at: string;
-      head_branch: string;
-      head_commit?: {
-        message: string;
-      };
-      html_url: string;
+    if (!data.workflow_runs) {
+      return res.status(200).json([]);
     }
 
-    interface FormattedRun {
-      id: number;
-      status: string;
-      createdAt: string;
-      updatedAt: string;
-      branch: string;
-      commit: string;
-      url: string;
-    }
-
-    const formattedData: FormattedRun[] = data.workflow_runs.map((run: WorkflowRun) => ({
+    const formattedData = data.workflow_runs.map((run: any) => ({
       id: run.id,
-      status: run.status === "completed" ? (run.conclusion === "success" ? "Success" : "Failed") : "In Progress",
+      status:
+        run.status === "completed"
+          ? run.conclusion === "success"
+            ? "Success"
+            : "Failed"
+          : "In Progress",
       createdAt: run.created_at,
       updatedAt: run.updated_at,
       branch: run.head_branch,
@@ -68,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(200).json(formattedData);
   } catch (error) {
-    console.error(" Error fetching GitHub Actions data:", error);
+    console.error("Error fetching GitHub Actions data:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }

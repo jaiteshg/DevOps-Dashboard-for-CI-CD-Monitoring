@@ -16,34 +16,34 @@ export default function PipelineLogs() {
   const [statusFilter, setStatusFilter] = useState("");
   const [socket, setSocket] = useState<Socket | null>(null);
 
-  useEffect(() => {
-    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000", { path: "/api/socket_io" });
+  // useEffect(() => {
+  //   const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000", { path: "/api/socket_io" });
 
-    newSocket.on("connect", () => {
-      console.log("Connected to WebSocket");
-      newSocket.emit("filterLogs", { projectFilter, statusFilter });
-    });
+  //   newSocket.on("connect", () => {
+  //     console.log("Connected to WebSocket");
+  //     newSocket.emit("filterLogs", { projectFilter, statusFilter });
+  //   });
 
-    newSocket.on("cicdUpdate", (data) => {
-      setLogs(data);
-    });
+  //   newSocket.on("cicdUpdate", (data) => {
+  //     setLogs(data);
+  //   });
 
-    setSocket(newSocket);
+  //   setSocket(newSocket);
 
-    return () => {
-      newSocket.disconnect();
-    };
-  },[projectFilter, statusFilter]);
+  //   return () => {
+  //     newSocket.disconnect();
+  //   };
+  // },[projectFilter, statusFilter]);
 
-  const updateFilters = useCallback(() => {
-    if (socket) {
-      socket.emit("filterLogs", { projectFilter, statusFilter });
-    }
-  }, [projectFilter, statusFilter, socket]);
+  // const updateFilters = useCallback(() => {
+  //   if (socket) {
+  //     socket.emit("filterLogs", { projectFilter, statusFilter });
+  //   }
+  // }, [projectFilter, statusFilter, socket]);
 
-  useEffect(() => {
-    updateFilters();
-  }, [projectFilter, statusFilter, updateFilters]);
+  // useEffect(() => {
+  //   updateFilters();
+  // }, [projectFilter, statusFilter, updateFilters]);
 
   const statusStyles = {
     Success: { icon: <CheckCircle className="text-green-500" size={24} />, color: "bg-green-100 text-green-800" },

@@ -1,20 +1,26 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import clientPromise from "@/lib/mongodb";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const client = await clientPromise;
+  const db = client.db();
+
   if (req.method === "GET") {
     try {
-      const cicdData = await prisma.cICD.findMany({
-        orderBy: { createdAt: "desc" },
-      });
-      res.status(200).json(cicdData);
+      const cicdData = await db
+        .collection("cicd")
+        .find({})
+        .sort({ createdAt: -1 })
+        .toArray();
+
+      return res.status(200).json(cicdData);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching CI/CD data", error });
+      console.error("Fetch Error:", error);
+      return res.status(500).json({ message: "Error fetching CI/CD data" });
     }
-  } 
-  else if (req.method === "POST") {  
+  }
+
+  else if (req.method === "POST") {
     try {
       const { projectName, status, buildNumber, logs } = req.body;
 
@@ -22,16 +28,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ message: "Missing required fields" });
       }
 
-      const newCiCd = await prisma.cICD.create({
-        data: { projectName, status, buildNumber, logs, createdAt: new Date() },
+      const newCiCd = {
+        projectName,
+        status,
+        buildNumber,
+        logs,
+        createdAt: new Date(),
+      };
+
+      const result = await db.collection("cicd").insertOne(newCiCd);
+
+      return res.status(201).json({
+        message: "CI/CD data added",
+        data: { ...newCiCd, _id: result.insertedId },
       });
 
-      res.status(201).json({ message: "CI/CD data added", data: newCiCd });
     } catch (error) {
-      res.status(500).json({ message: "Error adding CI/CD data", error });
+      console.error("Insert Error:", error);
+      return res.status(500).json({ message: "Error adding CI/CD data" });
     }
-  } 
+  }
+
   else {
-    res.status(405).json({ message: "Method Not Allowed" });  
+    return res.status(405).json({ message: "Method Not Allowed" });
   }
 }

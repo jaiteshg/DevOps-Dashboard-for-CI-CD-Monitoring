@@ -1,54 +1,46 @@
-import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
 import { getServerSession } from "next-auth/next";
-import authOptions from "../auth/[...nextauth]"; // Import NextAuth config
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { Session } from "next-auth";
-import type { User } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
-interface UpdateRequestBody {
-    name: string;
-    email?: string;
-    password?: string;
-}
-
-interface ErrorResponse {
-    error: string;
-}
-
-interface SuccessResponse {
-    message: string;
-}
+import clientPromise from "@/lib/mongodb";
+import authOptions from "../auth/[...nextauth]";
 
 export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse<ErrorResponse | SuccessResponse>
+  req: NextApiRequest,
+  res: NextApiResponse
 ) {
-    if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
 
-    const session: Session | null = await getServerSession(req, res, authOptions);
-    
-    if (!session || !session.user?.email) {
-        return res.status(401).json({ error: "Unauthorized" });
-    }
+  const session = await getServerSession(req, res, authOptions);
 
-    const { name, email, password }: UpdateRequestBody = req.body;
+  if (!session || !session.user?.email) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
-    try {
-        const updateData: Partial<User> = { name };
-        if (email) updateData.email = email;
-        if (password) updateData.password = await hash(password, 10);
+  const { name, email, password } = req.body;
 
-        await prisma.user.update({
-            where: { email: session.user.email },
-            data: updateData,
-        });
+  try {
+    const client = await clientPromise;
+    const db = client.db();
 
-        return res.status(200).json({ message: "Profile updated successfully!" });
-    } catch (error) {
-        console.error("Error updating profile:", error);
-        return res.status(500).json({ error: "Error updating profile" });
-    }
+    const updateData: any = {};
+
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (password) updateData.password = await hash(password, 10);
+
+    await db.collection("users").updateOne(
+      { email: session.user.email },
+      { $set: updateData }
+    );
+
+    return res.status(200).json({
+      message: "Profile updated successfully!",
+    });
+
+  } catch (error) {
+    console.error("Update Error:", error);
+    return res.status(500).json({ error: "Error updating profile" });
+  }
 }
