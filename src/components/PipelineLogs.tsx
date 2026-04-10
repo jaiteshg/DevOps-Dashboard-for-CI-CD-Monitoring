@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import io, { Socket } from "socket.io-client";
+// import io, { Socket } from "socket.io-client";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, XCircle, Clock } from "lucide-react";
 
@@ -14,7 +14,7 @@ export default function PipelineLogs() {
   const [logs, setLogs] = useState<Log[]>([]);
   const [projectFilter, setProjectFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [socket, setSocket] = useState<Socket | null>(null);
+  // const [socket, setSocket] = useState<Socket | null>(null);
 
   // useEffect(() => {
   //   const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000", { path: "/api/socket_io" });
