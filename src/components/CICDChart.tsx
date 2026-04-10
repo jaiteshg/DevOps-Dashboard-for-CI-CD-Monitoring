@@ -25,7 +25,7 @@ export default function CICDChart() {
 
   useEffect(() => {
   const interval = setInterval(() => {
-        fetch("/api/cicd/status");
+        fetch("/api/cicd/github");
       }, 5000);
 
       return () => clearInterval(interval);

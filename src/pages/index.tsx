@@ -25,7 +25,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchUpdates = async () => {
       try {
-        const res = await fetch("/api/cicd/status"); // Your API route
+        const res = await fetch("/api/cicd/github"); // Your API route
         const data = await res.json();
         console.log("📡 Received CI/CD update:", data);
   
