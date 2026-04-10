@@ -12,7 +12,7 @@ export default async function handler(
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const session = await getServerSession(req, res, authOptions);
+  const session = (await getServerSession(req, res, authOptions)) as any;
 
   if (!session || !session.user?.email) {
     return res.status(401).json({ error: "Unauthorized" });
