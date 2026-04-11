@@ -2,16 +2,18 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { runId } = req.query;
-
+  res.setHeader("Cache-Control", "no-store");  
   const { GITHUB_TOKEN, GITHUB_REPO_OWNER, GITHUB_REPO_NAME } = process.env;
 
-  if (!runId) {
-    return res.status(400).json({ error: "Missing runId" });
+  if (!runId || runId === "undefined") {
+    return res.status(400).json({ error: "Invalid runId" });
   }
 
+
   try {
-    const logsRes = await fetch(
-      `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/actions/runs/${runId}/logs`,
+    // ✅ Get jobs (fast)
+    const jobsRes = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/actions/runs/${runId}/jobs`,
       {
         headers: {
           Authorization: `Bearer ${GITHUB_TOKEN}`,
@@ -20,18 +22,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     );
 
-    
-    if (!logsRes.ok) {
-        const error = await logsRes.text();
-        return res.status(logsRes.status).json({ error });
-        }
+    const jobsData = await jobsRes.json();
 
-        const buffer = await logsRes.arrayBuffer();
-        return res.status(200).json({
-        logs: "Logs fetched (ZIP format - will parse later)",
-        });
+    if (!jobsData.jobs || jobsData.jobs.length === 0) {
+      return res.status(404).json({ logs: "No jobs found" });
+    }
 
+    // ✅ Extract readable logs from steps
+    const logs = jobsData.jobs
+      .map((job: any) => {
+        const steps = job.steps
+          .map((step: any) => {
+            return `🔹 ${step.name} → ${step.conclusion || step.status}`;
+          })
+          .join("\n");
 
+        return `📦 Job: ${job.name}\n${steps}`;
+      })
+      .join("\n\n");
+
+    return res.status(200).json({ logs });
 
   } catch (error) {
     console.error("Logs Error:", error);

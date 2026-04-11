@@ -15,8 +15,8 @@ export default function CICDStatus() {
   const [selectedRun, setSelectedRun] = useState<number | null>(null);
 
   const handleSelect = (runId: number) => {
-  setSelectedRun(runId);
-};
+    setSelectedRun(runId);
+  };
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -25,7 +25,7 @@ export default function CICDStatus() {
         const data = await res.json();
 
         if (Array.isArray(data)) {
-          setRuns(data.slice(0, 5)); // show last 5 runs
+          setRuns(data.slice(0, 5));
         }
       } catch (error) {
         console.error("Error fetching CI/CD status:", error);
@@ -38,7 +38,6 @@ export default function CICDStatus() {
     const interval = setInterval(fetchStatus, 10000);
 
     return () => clearInterval(interval);
-    
   }, []);
 
   const getStatusColor = (status: string) => {
@@ -60,35 +59,42 @@ export default function CICDStatus() {
       ) : (
         <div className="space-y-3">
           {runs.map((run) => (
-            <div
-              key={run.id}
-              onClick={() => handleSelect(run.id)}
-              className="flex justify-between items-center border-b pb-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <div>
-                <p className="text-sm font-medium text-gray-800 dark:text-white">
-                  {run.branch}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {run.commit.slice(0, 50)}
-                </p>
-              </div>
+  <div key={run.id}>
+    
+    <div
+      onClick={() => handleSelect(run.id)}
+      className={`flex justify-between items-center border-b pb-2 cursor-pointer transition ${
+        selectedRun === run.id
+          ? "bg-gray-200 dark:bg-gray-600"
+          : "hover:bg-gray-100 dark:hover:bg-gray-700"
+      }`}
+    >
+      <div>
+        <p className="text-sm font-medium text-gray-800 dark:text-white">
+          {run.branch}
+        </p>
+        <p className="text-xs text-gray-500">
+          {run.commit.slice(0, 50)}
+        </p>
+      </div>
 
-              <div className="text-right">
-                <p className={`font-semibold ${getStatusColor(run.status)}`}>
-                  {run.status}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {new Date(run.createdAt).toLocaleTimeString()}
-                </p>
-              </div>
-              
-            </div>
-          ))}
-          {selectedRun && (
-            <PipelineLogs runId={selectedRun} />
-          )}
+      <div className="text-right">
+        <p className={`font-semibold ${getStatusColor(run.status)}`}>
+          {run.status}
+        </p>
+        <p className="text-xs text-gray-500">
+          {new Date(run.createdAt).toLocaleTimeString()}
+        </p>
+      </div>
+    </div>
 
+    {/* ✅ THIS is the correct placement */}
+    {selectedRun === run.id && (
+      <PipelineLogs runId={run.id} />
+    )}
+
+  </div>
+))}
         </div>
       )}
     </div>

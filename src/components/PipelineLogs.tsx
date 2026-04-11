@@ -5,6 +5,14 @@ export default function PipelineLogs({ runId }: { runId: number }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!runId) {
+      setLogs("Invalid run selected");
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+
     const fetchLogs = async () => {
       try {
         const res = await fetch(`/api/cicd/logs?runId=${runId}`);
@@ -13,6 +21,7 @@ export default function PipelineLogs({ runId }: { runId: number }) {
         setLogs(data.logs || "No logs found");
       } catch (error) {
         console.error("Error fetching logs:", error);
+        setLogs("Error fetching logs");
       } finally {
         setLoading(false);
       }
@@ -30,6 +39,14 @@ export default function PipelineLogs({ runId }: { runId: number }) {
       ) : (
         <pre>{logs}</pre>
       )}
+
+      {/* 🚀 NEXT FEATURE (AI Debug Button) */}
+      <button
+        className="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+        onClick={() => alert("AI Debugging coming next 🚀")}
+      >
+        Explain Logs (AI)
+      </button>
     </div>
   );
 }

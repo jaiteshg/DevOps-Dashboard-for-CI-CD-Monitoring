@@ -69,10 +69,6 @@ export default function Dashboard() {
           <CICDChart />
           <CICDStatus />
         </div>
-
-        <div className="w-full">
-          <PipelineLogs />
-        </div>
       </main>
     </div>
   );
