@@ -1,14 +1,25 @@
 name: Manual workflow
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
-  greet:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send greeting
-        run: echo "Hello CI/CD 🚀"
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Node
+        run: |
+          node -v
+          npm -v
+
+      - name: Run some logs
+        run: |
+          echo "Starting build..."
+          sleep 2
+          echo "Installing dependencies..."
+          sleep 2
+          echo "Build successful!"

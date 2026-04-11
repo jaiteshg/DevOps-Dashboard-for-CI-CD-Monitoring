@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PipelineLogs from "./PipelineLogs";
 
 interface Run {
   id: number;
@@ -11,6 +12,11 @@ interface Run {
 export default function CICDStatus() {
   const [runs, setRuns] = useState<Run[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedRun, setSelectedRun] = useState<number | null>(null);
+
+  const handleSelect = (runId: number) => {
+  setSelectedRun(runId);
+};
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -32,6 +38,7 @@ export default function CICDStatus() {
     const interval = setInterval(fetchStatus, 10000);
 
     return () => clearInterval(interval);
+    
   }, []);
 
   const getStatusColor = (status: string) => {
@@ -55,7 +62,8 @@ export default function CICDStatus() {
           {runs.map((run) => (
             <div
               key={run.id}
-              className="flex justify-between items-center border-b pb-2"
+              onClick={() => handleSelect(run.id)}
+              className="flex justify-between items-center border-b pb-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <div>
                 <p className="text-sm font-medium text-gray-800 dark:text-white">
@@ -74,8 +82,13 @@ export default function CICDStatus() {
                   {new Date(run.createdAt).toLocaleTimeString()}
                 </p>
               </div>
+              
             </div>
           ))}
+          {selectedRun && (
+            <PipelineLogs runId={selectedRun} />
+          )}
+
         </div>
       )}
     </div>
