@@ -16,16 +16,24 @@ export default function Signin() {
     setError("");
     setLoading(true);
 
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+    try {
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-    setLoading(false);
-    if (res?.error) return setError("Invalid email or password");
+      if (res?.error) {
+        setError("Invalid email or password");
+        setLoading(false);
+        return;
+      }
 
-    router.push("/"); // Redirect to dashboard
+      router.push("/");
+    } catch (err) {
+      setError("Something went wrong. Try again.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -33,11 +41,14 @@ export default function Signin() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
         className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96"
       >
-        <h2 className="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-white">Signin</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-white">
+          Sign In
+        </h2>
+
         {error && <p className="text-red-500 text-center">{error}</p>}
+
         <form onSubmit={handleSignin} className="flex flex-col gap-4">
           <input
             type="email"
@@ -47,6 +58,7 @@ export default function Signin() {
             className="border p-2 rounded dark:bg-gray-700 dark:text-white"
             required
           />
+
           <input
             type="password"
             placeholder="Password"
@@ -55,17 +67,19 @@ export default function Signin() {
             className="border p-2 rounded dark:bg-gray-700 dark:text-white"
             required
           />
+
           <button
             type="submit"
-            className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition"
             disabled={loading}
+            className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition disabled:opacity-50"
           >
-            {loading ? "Signing in..." : "Signin"}
+            {loading ? "Signing in..." : "Sign In"}
           </button>
+
           <p className="text-center text-gray-500">
-            Don not have an account?{" "}
+            Don’t have an account?{" "}
             <Link href="/signup" className="text-blue-500 hover:underline">
-              Signup
+              Sign Up
             </Link>
           </p>
         </form>
