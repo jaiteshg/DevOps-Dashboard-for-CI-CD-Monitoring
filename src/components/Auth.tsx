@@ -3,52 +3,60 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 
 export default function Auth() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
+
+  if (status === "loading") {
+    return <p className="text-gray-500">Loading...</p>;
+  }
 
   return (
     <div className="flex items-center gap-4">
       {session ? (
         <>
-          {/* User Avatar & Name */}
+          {/* Avatar */}
           {session.user?.image ? (
             <Image
               src={session.user.image}
               alt="User Avatar"
-              className="w-10 h-10 rounded-full border border-gray-300 cursor-pointer"
+              width={40}
+              height={40}
+              className="rounded-full border border-gray-300 cursor-pointer"
               onClick={() => router.push("/settings")}
-            ></Image>
+            />
           ) : (
             <div
-              className="w-10 h-10 flex items-center justify-center bg-gray-400 rounded-full text-white font-bold cursor-pointer"
+              className="w-10 h-10 flex items-center justify-center bg-gray-500 rounded-full text-white font-bold cursor-pointer"
               onClick={() => router.push("/settings")}
             >
-              {session.user?.name ? session.user.name[0] : "?"}
+              {session.user?.name?.[0] || "U"}
             </div>
           )}
-          {/*  Logout Button */}
+
+          {/* Logout */}
           <button
-            onClick={() => signOut()}
+            onClick={() => signOut({ callbackUrl: "/signin" })}
             className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
           >
-            Signout
+            Sign Out
           </button>
         </>
       ) : (
         <>
-        <button
+          <button
             onClick={() => signIn()}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all"
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
           >
             Sign In
           </button>
+
           <button
             onClick={() => router.push("/signup")}
-            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all"
+            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
           >
             Sign Up
           </button>
-        </>  
+        </>
       )}
     </div>
   );

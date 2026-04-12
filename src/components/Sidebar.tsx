@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Moon, Sun, Home, Activity, Settings, Menu, X } from "lucide-react";
+import { Moon, Sun, Home, Activity, Settings, Menu } from "lucide-react";
 import { ThemeContext } from "./ThemeContext";
 import { motion } from "framer-motion";
 
@@ -14,68 +14,54 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
 
   return (
     <motion.aside
-      initial={{ width: isCollapsed ? 80 : 260 }} 
-      animate={{ width: isCollapsed ? 80 : 260 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="bg-white dark:bg-gray-900 p-4 shadow-md flex flex-col h-screen min-h-screen overflow-auto" 
+      animate={{ width: isCollapsed ? 80 : 240 }}
+      className="bg-white dark:bg-gray-900 p-4 shadow-md flex flex-col h-screen"
     >
-
-      {/* Sidebar Toggle Button */}
+      {/* Toggle */}
       <button
-        className="self-end p-2 rounded-md bg-white hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+        className="mb-4 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
-        {isCollapsed ? <Menu size={24} /> : <X size={24} />}
+        <Menu size={20} />
       </button>
 
-      {/* Logo & Title */}
+      {/* Title */}
       {!isCollapsed && (
-        <motion.h1
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="text-2xl font-bold mb-6 text-gray-900 dark:text-white text-center"
-        >
-          🚀 DevOps Dashboard
-        </motion.h1>
+        <h1 className="text-xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+          🚀 DevOps
+        </h1>
       )}
 
-      {/*  Navigation */}
-      <nav className="flex-1 space-y-4">
+      {/* Navigation */}
+      <nav className="flex-1 space-y-2">
         {[
           { name: "Home", icon: Home, id: "home" },
           { name: "Pipelines", icon: Activity, id: "pipelines" },
-          { name: "Settings", icon: Settings, id: "settings"  },
+          { name: "Settings", icon: Settings, id: "settings" },
         ].map(({ name, icon: Icon, id }) => (
-          <motion.button
+          <button
             key={id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className={`flex items-center gap-3 p-3 w-full rounded-lg transition-all ${
+            onClick={() => setActiveTab(id)}
+            className={`flex items-center gap-3 p-3 w-full rounded-lg transition ${
               activeTab === id
                 ? "bg-blue-500 text-white"
-                : "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                : "text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
             }`}
-            onClick={() => setActiveTab(id)}
           >
             <Icon size={20} />
             {!isCollapsed && name}
-          </motion.button>
+          </button>
         ))}
       </nav>
 
-      {/* Dark Mode Toggle */}
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="flex items-center gap-3 p-3 w-full text-left bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg"
+      {/* Theme Toggle */}
+      <button
         onClick={theme?.toggleDarkMode}
+        className="mt-4 flex items-center gap-3 p-3 rounded-lg bg-gray-200 dark:bg-gray-700"
       >
-        {theme?.darkMode ? <Sun size={20} /> : <Moon size={20} />} {!isCollapsed && "Toggle Theme"}
-      </motion.button>
-      
+        {theme?.darkMode ? <Sun size={20} /> : <Moon size={20} />}
+        {!isCollapsed && "Theme"}
+      </button>
     </motion.aside>
   );
 }

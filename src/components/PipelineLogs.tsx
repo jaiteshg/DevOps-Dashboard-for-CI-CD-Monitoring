@@ -5,11 +5,7 @@ export default function PipelineLogs({ runId }: { runId: number }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!runId) {
-      setLogs("Invalid run selected");
-      setLoading(false);
-      return;
-    }
+    if (!runId) return;
 
     setLoading(true);
 
@@ -35,12 +31,13 @@ export default function PipelineLogs({ runId }: { runId: number }) {
       <h4 className="text-white mb-2">Logs</h4>
 
       {loading ? (
-        <p>Loading logs...</p>
+        <p className="text-yellow-400">Loading logs...</p>
+      ) : logs.includes("Error") ? (
+        <p className="text-red-400">{logs}</p>
       ) : (
         <pre>{logs}</pre>
       )}
 
-      {/* 🚀 NEXT FEATURE (AI Debug Button) */}
       <button
         className="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
         onClick={() => alert("AI Debugging coming next 🚀")}

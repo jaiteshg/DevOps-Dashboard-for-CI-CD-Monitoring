@@ -59,42 +59,39 @@ export default function CICDStatus() {
       ) : (
         <div className="space-y-3">
           {runs.map((run) => (
-  <div key={run.id}>
-    
-    <div
-      onClick={() => handleSelect(run.id)}
-      className={`flex justify-between items-center border-b pb-2 cursor-pointer transition ${
-        selectedRun === run.id
-          ? "bg-gray-200 dark:bg-gray-600"
-          : "hover:bg-gray-100 dark:hover:bg-gray-700"
-      }`}
-    >
-      <div>
-        <p className="text-sm font-medium text-gray-800 dark:text-white">
-          {run.branch}
-        </p>
-        <p className="text-xs text-gray-500">
-          {run.commit.slice(0, 50)}
-        </p>
-      </div>
+            <div key={run.id}>
+              <div
+                onClick={() => handleSelect(run.id)}
+                className={`flex justify-between items-center border-b pb-2 cursor-pointer transition ${
+                  selectedRun === run.id
+                    ? "bg-gray-200 dark:bg-gray-600"
+                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
+              >
+                <div>
+                  <p className="text-sm font-medium text-gray-800 dark:text-white">
+                    {run.branch}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate max-w-xs">
+                    {run.commit ? run.commit.slice(0, 50) : "No commit message"}
+                  </p>
+                </div>
 
-      <div className="text-right">
-        <p className={`font-semibold ${getStatusColor(run.status)}`}>
-          {run.status}
-        </p>
-        <p className="text-xs text-gray-500">
-          {new Date(run.createdAt).toLocaleTimeString()}
-        </p>
-      </div>
-    </div>
+                <div className="text-right">
+                  <p className={`font-semibold ${getStatusColor(run.status)}`}>
+                    {run.status}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {new Date(run.createdAt).toLocaleTimeString()}
+                  </p>
+                </div>
+              </div>
 
-    {/* ✅ THIS is the correct placement */}
-    {selectedRun === run.id && (
-      <PipelineLogs runId={run.id} />
-    )}
-
-  </div>
-))}
+              {selectedRun === run.id && (
+                <PipelineLogs runId={run.id} />
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>
