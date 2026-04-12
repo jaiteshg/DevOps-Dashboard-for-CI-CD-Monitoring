@@ -1,6 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import clientPromise from "@/lib/mongodb";
 
+interface CICDData {
+  projectName: string;
+  status: string;
+  buildNumber: number;
+  logs: string;
+  createdAt: Date;
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const client = await clientPromise;
   const db = client.db();
@@ -20,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   }
 
-  else if (req.method === "POST") {
+  if (req.method === "POST") {
     try {
       const { projectName, status, buildNumber, logs } = req.body;
 
@@ -28,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ message: "Missing required fields" });
       }
 
-      const newCiCd = {
+      const newCiCd: CICDData = {
         projectName,
         status,
         buildNumber,
@@ -42,14 +50,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         message: "CI/CD data added",
         data: { ...newCiCd, _id: result.insertedId },
       });
-
     } catch (error) {
       console.error("Insert Error:", error);
       return res.status(500).json({ message: "Error adding CI/CD data" });
     }
   }
 
-  else {
-    return res.status(405).json({ message: "Method Not Allowed" });
-  }
+  return res.status(405).json({ message: "Method Not Allowed" });
 }

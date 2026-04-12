@@ -8,26 +8,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { name, email, password } = req.body;
+    let { name, email, password } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ error: "All fields are required." });
     }
 
+    email = email.toLowerCase().trim();
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: "Password must be at least 6 characters." });
+    }
+
     const client = await clientPromise;
     const db = client.db();
 
-    // Check if user exists
     const existingUser = await db.collection("users").findOne({ email });
 
     if (existingUser) {
       return res.status(400).json({ error: "User already exists." });
     }
 
-    // Hash password
     const hashedPassword = await hash(password, 10);
 
-    // Create user
     const result = await db.collection("users").insertOne({
       name,
       email,

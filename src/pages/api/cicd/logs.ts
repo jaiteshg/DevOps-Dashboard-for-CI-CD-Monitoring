@@ -1,17 +1,31 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
+interface Step {
+  name: string;
+  status: string;
+  conclusion: string | null;
+}
+
+interface Job {
+  name: string;
+  steps: Step[];
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  res.setHeader("Cache-Control", "no-store");
+
   const { runId } = req.query;
-  res.setHeader("Cache-Control", "no-store");  
   const { GITHUB_TOKEN, GITHUB_REPO_OWNER, GITHUB_REPO_NAME } = process.env;
 
   if (!runId || runId === "undefined") {
     return res.status(400).json({ error: "Invalid runId" });
   }
 
+  if (!GITHUB_TOKEN) {
+    return res.status(500).json({ error: "Missing GitHub token" });
+  }
 
   try {
-    // ✅ Get jobs (fast)
     const jobsRes = await fetch(
       `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/actions/runs/${runId}/jobs`,
       {
@@ -24,15 +38,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const jobsData = await jobsRes.json();
 
-    if (!jobsData.jobs || jobsData.jobs.length === 0) {
-      return res.status(404).json({ logs: "No jobs found" });
+    if (!jobsRes.ok) {
+      console.error("GitHub Jobs API Error:", jobsData);
+      return res.status(jobsRes.status).json({
+        error: jobsData.message || "Failed to fetch jobs",
+      });
     }
 
-    // ✅ Extract readable logs from steps
+    if (!jobsData.jobs || jobsData.jobs.length === 0) {
+      return res.status(200).json({ logs: "No jobs found" });
+    }
+
     const logs = jobsData.jobs
-      .map((job: any) => {
+      .map((job: Job) => {
+        if (!job.steps || job.steps.length === 0) {
+          return `📦 Job: ${job.name}\n(No steps available)`;
+        }
+
         const steps = job.steps
-          .map((step: any) => {
+          .map((step: Step) => {
             return `🔹 ${step.name} → ${step.conclusion || step.status}`;
           })
           .join("\n");
@@ -42,7 +66,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .join("\n\n");
 
     return res.status(200).json({ logs });
-
   } catch (error) {
     console.error("Logs Error:", error);
     return res.status(500).json({ error: "Failed to fetch logs" });

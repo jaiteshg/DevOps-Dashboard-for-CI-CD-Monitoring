@@ -1,8 +1,8 @@
-import { hash } from "bcryptjs";
+ import { hash } from "bcryptjs";
 import { getServerSession } from "next-auth/next";
 import type { NextApiRequest, NextApiResponse } from "next";
 import clientPromise from "@/lib/mongodb";
-import authOptions from "../auth/[...nextauth]";
+import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,7 +12,7 @@ export default async function handler(
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const session = (await getServerSession(req, res, authOptions)) as any;
+  const session = await getServerSession(req, res, authOptions);
 
   if (!session || !session.user?.email) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -24,11 +24,15 @@ export default async function handler(
     const client = await clientPromise;
     const db = client.db();
 
-    const updateData: any = {};
+    const updateData: Record<string, any> = {};
 
     if (name) updateData.name = name;
-    if (email) updateData.email = email;
+    if (email) updateData.email = email.toLowerCase().trim();
     if (password) updateData.password = await hash(password, 10);
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ error: "No fields to update" });
+    }
 
     await db.collection("users").updateOne(
       { email: session.user.email },
